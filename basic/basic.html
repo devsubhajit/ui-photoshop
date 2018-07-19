@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>
+        Basic creating SVG path with mouse click and move
+    </title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script src="jquery.min.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="svgedit-box">
+        <svg id="svglayer" width="500px" height="400px" viewBox="0 0 500 400">  
+        </svg>
+    </div>
+    <script>
+        $(document).ready(function() {
+            var makeline = $("#svglayer");
+
+            var counter = 0;
+            $(makeline).bind('mousedown', function(e) {
+
+                var svgTop = $(makeline).offset().top;
+                var svgLeft = $(makeline).offset().left;
+                console.log('svgTop ', svgTop, ' svgLeft ', svgLeft);
+                var relX = e.pageX - svgLeft; // mouse position X axis
+                var relY = e.pageY - svgTop; // mouse position Y axis
+                var newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path'); //Create a path in SVG's namespace
+
+                newElement.style.stroke = "#f00"; //Set stroke colour
+                newElement.style.strokeWidth = "2px"; //Set stroke width
+                newElement.style.fill = "rgba(255,255,255,0.6)";
+                newElement.setAttribute('id', 'newpath' + counter);
+                $(makeline).append(newElement);
+                var pathArray = [];
+                pathArray.push('M' + relX + ' ' + relY);
+
+                $(makeline).bind('mousemove', function(e) {
+                    var relXx = e.pageX - svgLeft; // mouse position X axis
+                    var relYy = e.pageY - svgTop; // mouse position Y axis  
+                    pathArray.push(relXx + ' ' + relYy);
+                    $(newElement).attr('d', pathArray);
+                    // console.log('pathArray', pathArray);
+                });
+
+            });
+            // -- unbinding the events and removing zIndex    
+            $(makeline).bind('mouseup', function(e) {
+                var pathArray = [];
+                pathArray.push($(makeline).find("#newpath" + counter).attr('d'));
+                var svgTop = $(makeline).offset().top;
+                var svgLeft = $(makeline).offset().left;
+                var relXx = e.pageX - svgLeft; // mouse position X axis
+                var relYy = e.pageY - svgTop; // mouse position Y axis  
+                pathArray.push(relXx + ' ' + relYy + ' Z');
+                $(makeline).find("#newpath" + counter).attr('d', pathArray);
+                // console.log('pathArray ', pathArray);
+                $(makeline).unbind('mousemove');
+                counter++;
+            });
+        });
+        //});
+    </script>
+</body>
+
+</html>
